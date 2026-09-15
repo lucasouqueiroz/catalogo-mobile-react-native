@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { login } from '../store/slices/authSlice';
 import { colors } from '../theme/colors';
@@ -22,38 +22,74 @@ export default function LoginScreen() {
   }
 
   return (
-    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.container}>
-      <View style={styles.form}>
-        <Text style={styles.title}>Catálogo Mobile</Text>
-        <Text style={styles.subtitle}>Entre para consultar os produtos</Text>
+    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.page}>
+      <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
+        <View style={styles.hero}>
+          <Text style={styles.brand}>URBAN STORE</Text>
+          <Text style={styles.heroTitle}>Seu catálogo{`\n`}em qualquer lugar.</Text>
+          <Text style={styles.heroText}>Acesse produtos, promoções e detalhes em uma experiência simples e rápida.</Text>
+        </View>
 
-        <Text style={styles.label}>E-mail</Text>
-        <TextInput style={[styles.input, errors.email && styles.inputError]} placeholder="aluno@exemplo.com" value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none" />
-        {!!errors.email && <Text style={styles.error}>{errors.email}</Text>}
+        <View style={styles.form}>
+          <Text style={styles.formTitle}>Entrar</Text>
+          <Text style={styles.formSubtitle}>Informe seus dados para acessar o catálogo.</Text>
 
-        <Text style={styles.label}>Senha</Text>
-        <TextInput style={[styles.input, errors.password && styles.inputError]} placeholder="123456" value={password} onChangeText={setPassword} secureTextEntry />
-        {!!errors.password && <Text style={styles.error}>{errors.password}</Text>}
+          <Text style={styles.label}>E-mail</Text>
+          <TextInput
+            style={[styles.input, errors.email && styles.inputError]}
+            placeholder="aluno@exemplo.com"
+            placeholderTextColor="#94a3b8"
+            value={email}
+            onChangeText={(text) => { setEmail(text); if (errors.email) setErrors({ ...errors, email: null }); }}
+            keyboardType="email-address"
+            autoCapitalize="none"
+            autoCorrect={false}
+          />
+          {!!errors.email && <Text style={styles.error}>{errors.email}</Text>}
 
-        <TouchableOpacity style={styles.button} onPress={handleLogin}>
-          <Text style={styles.buttonText}>Entrar</Text>
-        </TouchableOpacity>
-        <Text style={styles.help}>Teste: aluno@exemplo.com / 123456</Text>
-      </View>
+          <Text style={styles.label}>Senha</Text>
+          <TextInput
+            style={[styles.input, errors.password && styles.inputError]}
+            placeholder="123456"
+            placeholderTextColor="#94a3b8"
+            value={password}
+            onChangeText={(text) => { setPassword(text); if (errors.password) setErrors({ ...errors, password: null }); }}
+            secureTextEntry
+          />
+          {!!errors.password && <Text style={styles.error}>{errors.password}</Text>}
+
+          <TouchableOpacity style={styles.button} onPress={handleLogin} activeOpacity={0.85}>
+            <Text style={styles.buttonText}>Acessar catálogo</Text>
+          </TouchableOpacity>
+
+          <View style={styles.testBox}>
+            <Text style={styles.testTitle}>Dados para teste</Text>
+            <Text style={styles.testText}>E-mail: aluno@exemplo.com</Text>
+            <Text style={styles.testText}>Senha: 123456</Text>
+          </View>
+        </View>
+      </ScrollView>
     </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'center', padding: 24, backgroundColor: colors.background },
-  form: { backgroundColor: colors.surface, borderRadius: 16, padding: 24, elevation: 2 },
-  title: { color: colors.primary, fontSize: 28, fontWeight: '700', textAlign: 'center' },
-  subtitle: { color: colors.textLight, textAlign: 'center', marginTop: 8, marginBottom: 28 },
-  label: { color: colors.text, fontWeight: '700', marginBottom: 8, marginTop: 12 },
-  input: { borderWidth: 1, borderColor: colors.border, borderRadius: 8, padding: 13, color: colors.text },
+  page: { flex: 1, backgroundColor: colors.background },
+  scroll: { flexGrow: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', padding: 24, gap: 24 },
+  hero: { width: '100%', maxWidth: 420, padding: 24 },
+  brand: { color: colors.primary, fontWeight: '900', letterSpacing: 2, fontSize: 13, marginBottom: 18 },
+  heroTitle: { color: colors.text, fontSize: 38, lineHeight: 44, fontWeight: '900' },
+  heroText: { color: colors.textLight, fontSize: 16, lineHeight: 24, marginTop: 16 },
+  form: { width: '100%', maxWidth: 430, backgroundColor: colors.surface, borderRadius: 20, padding: 28, borderWidth: 1, borderColor: colors.border, shadowColor: '#0f172a', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.1, shadowRadius: 18, elevation: 4 },
+  formTitle: { color: colors.text, fontSize: 27, fontWeight: '800' },
+  formSubtitle: { color: colors.textLight, lineHeight: 20, marginTop: 6, marginBottom: 24 },
+  label: { color: colors.text, fontWeight: '800', marginBottom: 8, marginTop: 14 },
+  input: { borderWidth: 1, borderColor: colors.border, borderRadius: 10, paddingHorizontal: 14, paddingVertical: 14, color: colors.text, fontSize: 16, backgroundColor: '#ffffff' },
   inputError: { borderColor: colors.error },
   error: { color: colors.error, fontSize: 12, marginTop: 5 },
-  button: { backgroundColor: colors.primary, borderRadius: 8, padding: 15, alignItems: 'center', marginTop: 24 },
-  buttonText: { color: '#fff', fontWeight: '700', fontSize: 16 },
-  help: { color: colors.textLight, textAlign: 'center', fontSize: 12, marginTop: 16 },
+  button: { backgroundColor: colors.primary, borderRadius: 10, padding: 16, alignItems: 'center', marginTop: 26 },
+  buttonText: { color: '#fff', fontWeight: '800', fontSize: 16 },
+  testBox: { backgroundColor: '#eff6ff', borderRadius: 10, padding: 14, marginTop: 20, borderWidth: 1, borderColor: '#bfdbfe' },
+  testTitle: { color: colors.primaryDark, fontWeight: '800', marginBottom: 5 },
+  testText: { color: '#334155', fontSize: 13, lineHeight: 19 },
 });
